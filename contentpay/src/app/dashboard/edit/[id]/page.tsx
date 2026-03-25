@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Editor } from "@/components/editor/Editor";
 
 export default function EditPostPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const [title, setTitle] = useState("");
@@ -57,10 +58,10 @@ export default function EditPostPage() {
         router.push("/dashboard");
       } else {
         const data = await res.json();
-        alert(data.error || "更新失败");
+        alert(data.error || "Failed to update post");
       }
     } catch {
-      alert("更新失败");
+      alert("Failed to update post");
     } finally {
       setLoading(false);
     }
@@ -68,73 +69,85 @@ export default function EditPostPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        加载中...
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center text-gray-600">
+        Loading...
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">编辑内容</h1>
-          <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-            取消
+          <h1 className="text-xl font-bold text-gray-900">Edit Post</h1>
+          <Link
+            href="/dashboard"
+            className="text-gray-600 hover:text-gray-900 font-medium"
+          >
+            Cancel
           </Link>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white rounded-lg border p-6 space-y-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">标题</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Title
+              </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">摘要</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Excerpt
+              </label>
               <textarea
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Brief description of your content..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">内容</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Content
+              </label>
               <Editor value={content} onChange={setContent} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border p-6 space-y-4">
-            <h2 className="font-semibold">定价设置</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+            <h2 className="font-semibold text-gray-900">Pricing</h2>
 
             <div>
-              <label className="block text-sm font-medium mb-2">价格类型</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Price Type
+              </label>
               <select
                 value={priceType}
                 onChange={(e) => setPriceType(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="FREE">免费</option>
-                <option value="ONE_TIME">单次购买</option>
-                <option value="SUBSCRIPTION">会员专享</option>
+                <option value="FREE">Free</option>
+                <option value="ONE_TIME">One-time Purchase</option>
+                <option value="SUBSCRIPTION">Members Only</option>
               </select>
             </div>
 
             {priceType === "ONE_TIME" && (
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  价格 (USD)
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price (USD)
                 </label>
                 <input
                   type="number"
@@ -142,38 +155,42 @@ export default function EditPostPage() {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="9.99"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             )}
 
             {priceType !== "FREE" && (
               <div>
-                <label className="block text-sm font-medium mb-2">付费墙类型</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Paywall Type
+                </label>
                 <select
                   value={paywallType}
                   onChange={(e) => setPaywallType(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="FULL">完全付费</option>
-                  <option value="PREVIEW">部分免费预览</option>
-                  <option value="MEMBERSHIP">仅会员可见</option>
+                  <option value="FULL">Full Paid</option>
+                  <option value="PREVIEW">Free Preview (30%)</option>
+                  <option value="MEMBERSHIP">Members Only</option>
                 </select>
               </div>
             )}
           </div>
 
-          <div className="bg-white rounded-lg border p-6 space-y-4">
-            <h2 className="font-semibold">发布设置</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+            <h2 className="font-semibold text-gray-900">Publishing</h2>
             <div>
-              <label className="block text-sm font-medium mb-2">状态</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="DRAFT">存为草稿</option>
-                <option value="PUBLISHED">立即发布</option>
+                <option value="DRAFT">Save as Draft</option>
+                <option value="PUBLISHED">Publish Now</option>
               </select>
             </div>
           </div>
@@ -181,16 +198,16 @@ export default function EditPostPage() {
           <div className="flex justify-end gap-4">
             <Link
               href="/dashboard"
-              className="px-6 py-2 border rounded-md hover:bg-gray-50"
+              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700"
             >
-              取消
+              Cancel
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50"
+              className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 disabled:opacity-50 font-medium"
             >
-              {loading ? "保存中..." : "保存"}
+              {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
