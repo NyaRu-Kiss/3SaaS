@@ -21,6 +21,22 @@ model User {
   purchases            Purchase[]
   subscriptions        Subscription[] @relation("Subscriber")
   receivedSubscriptions Subscription[] @relation("Creator")
+  withdrawals           Withdrawal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Withdrawal {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount    Int
+  currency  String @default("usd")
+  status    String @default("PENDING")
+
+  stripeTransferId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

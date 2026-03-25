@@ -14,6 +14,14 @@ interface Post {
   publishedAt: string | null;
 }
 
+interface Subscriber {
+  id: string;
+  name: string | null;
+  email: string;
+  subscribedAt: string;
+  plan: string;
+}
+
 interface DashboardContentProps {
   posts: Post[];
   subscriptionCount: number;
@@ -31,7 +39,33 @@ export function DashboardContent({
   totalRevenue,
   user,
 }: DashboardContentProps) {
-  const [activeTab, setActiveTab] = useState<"posts" | "analytics">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "analytics" | "subscribers">("posts");
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [loadingSubscribers, setLoadingSubscribers] = useState(false);
+
+  const loadSubscribers = async () => {
+    setLoadingSubscribers(true);
+    try {
+      const res = await fetch(`/api/subscriptions/subscribers?creator=${user.slug}`);
+      const data = await res.json();
+      setSubscribers(data.subscribers || []);
+    } catch {
+      alert("加载订阅者失败");
+    } finally {
+      setLoadingSubscribers(false);
+    }
+  };
+
+  const exportSubscribers = async () => {
+    window.open(`/api/subscriptions/subscribers?creator=${user.slug}&format=csv`, "_blank");
+  };
+
+  const handleTabChange = (tab: "posts" | "analytics" | "subscribers") => {
+    setActiveTab(tab);
+    if (tab === "subscribers" && subscribers.length === 0) {
+      loadSubscribers();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -71,7 +105,7 @@ export function DashboardContent({
           <div className="border-b px-6 py-4 flex justify-between items-center">
             <div className="flex gap-4">
               <button
-                onClick={() => setActiveTab("posts")}
+                onClick={() => handleTabChange("posts")}
                 className={`px-4 py-2 ${
                   activeTab === "posts"
                     ? "border-b-2 border-black font-medium"
@@ -81,7 +115,17 @@ export function DashboardContent({
                 我的内容
               </button>
               <button
-                onClick={() => setActiveTab("analytics")}
+                onClick={() => handleTabChange("subscribers")}
+                className={`px-4 py-2 ${
+                  activeTab === "subscribers"
+                    ? "border-b-2 border-black font-medium"
+                    : "text-gray-600"
+                }`}
+              >
+                订阅者管理
+              </button>
+              <button
+                onClick={() => handleTabChange("analytics")}
                 className={`px-4 py-2 ${
                   activeTab === "analytics"
                     ? "border-b-2 border-black font-medium"
@@ -91,12 +135,22 @@ export function DashboardContent({
                 数据分析
               </button>
             </div>
-            <Link
-              href="/dashboard/new"
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-            >
-              创建内容
-            </Link>
+            {activeTab === "posts" && (
+              <Link
+                href="/dashboard/new"
+                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              >
+                创建内容
+              </Link>
+            )}
+            {activeTab === "subscribers" && (
+              <button
+                onClick={exportSubscribers}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                导出 CSV
+              </button>
+            )}
           </div>
 
           <div className="p-6">
@@ -142,6 +196,37 @@ export function DashboardContent({
                       </div>
                     </div>
                   ))
+                )}
+              </div>
+            ) : activeTab === "subscribers" ? (
+              <div>
+                {loadingSubscribers ? (
+                  <p className="text-center py-8">加载中...</p>
+                ) : subscribers.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">暂无订阅者</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="text-left text-sm text-gray-500 border-b">
+                          <th className="pb-3">姓名</th>
+                          <th className="pb-3">邮箱</th>
+                          <th className="pb-3">订阅计划</th>
+                          <th className="pb-3">订阅时间</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subscribers.map((sub) => (
+                          <tr key={sub.id} className="border-b">
+                            <td className="py-3">{sub.name || "-"}</td>
+                            <td className="py-3">{sub.email}</td>
+                            <td className="py-3">{sub.plan === "yearly" ? "年付" : "月付"}</td>
+                            <td className="py-3">{new Date(sub.subscribedAt).toLocaleDateString("zh-CN")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </div>
             ) : (
