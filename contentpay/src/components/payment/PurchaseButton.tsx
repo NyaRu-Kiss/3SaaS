@@ -20,8 +20,8 @@ export function PurchaseButton({
 
   if (isPurchased) {
     return (
-      <div className="px-4 py-2 bg-green-100 text-green-800 rounded-lg">
-        已购买
+      <div className="px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium">
+        Purchased
       </div>
     );
   }
@@ -39,10 +39,10 @@ export function PurchaseButton({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "购买失败");
+        alert(data.error || "Purchase failed");
       }
     } catch {
-      alert("购买失败，请重试");
+      alert("Purchase failed, please try again");
     } finally {
       setLoading(false);
     }
@@ -52,9 +52,9 @@ export function PurchaseButton({
     <button
       onClick={handlePurchase}
       disabled={loading}
-      className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 font-medium"
+      className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 font-medium"
     >
-      {loading ? "跳转支付..." : `购买 ${formatPrice(price, currency)}`}
+      {loading ? "Redirecting to payment..." : `Purchase for ${formatPrice(price, currency)}`}
     </button>
   );
 }

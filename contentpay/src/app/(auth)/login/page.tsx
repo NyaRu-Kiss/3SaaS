@@ -25,37 +25,47 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("邮箱或密码错误");
+        setError("Invalid email or password");
       } else {
         router.push("/dashboard");
       }
     } catch {
-      setError("登录失败，请重试");
+      setError("Login failed, please try again");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg border border-gray-200">
         <div>
-          <h2 className="text-center text-3xl font-bold">登录 ContentPay</h2>
+          <h2 className="text-center text-3xl font-bold text-gray-900">
+            Log In to ContentPay
+          </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            或{" "}
-            <Link href="/register" className="text-blue-600 hover:text-blue-500">
-              注册新账号
+            Or{" "}
+            <Link
+              href="/register"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              create a new account
             </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-600 text-sm text-center bg-red-50 py-2 rounded">
+              {error}
+            </div>
           )}
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                邮箱
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
               </label>
               <input
                 id="email"
@@ -63,12 +73,15 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                密码
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
               </label>
               <input
                 id="password"
@@ -76,16 +89,16 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 disabled:opacity-50"
           >
-            {loading ? "登录中..." : "登录"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
       </div>

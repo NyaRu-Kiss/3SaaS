@@ -33,32 +33,32 @@ export default function RefundsPage() {
       const data = await res.json();
       setPurchases(data);
     } catch {
-      alert("加载失败");
+      alert("Failed to load");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRefund = async (purchaseId: string, reason?: string) => {
-    if (!confirm("确定要退款此订单吗？")) return;
+  const handleRefund = async (purchaseId: string) => {
+    if (!confirm("Are you sure you want to refund this order?")) return;
 
     setRefundingId(purchaseId);
     try {
       const res = await fetch("/api/refunds", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ purchaseId, reason }),
+        body: JSON.stringify({ purchaseId }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        alert("退款成功");
+        alert("Refund successful");
         loadPurchases();
       } else {
-        alert(data.error || "退款失败");
+        alert(data.error || "Refund failed");
       }
     } catch {
-      alert("退款失败");
+      alert("Refund failed");
     } finally {
       setRefundingId(null);
     }
@@ -73,38 +73,41 @@ export default function RefundsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-              &larr; 返回
+            <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-gray-900 font-medium"
+            >
+              &larr; Back
             </Link>
-            <h1 className="text-xl font-bold">退款管理</h1>
+            <h1 className="text-xl font-bold text-gray-900">Refund Management</h1>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg border overflow-hidden">
-          <div className="px-6 py-4 border-b">
-            <p className="text-sm text-gray-500">
-              仅显示 30 天内的订单，最多支持退款一次
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <p className="text-sm text-gray-600">
+              Only orders within 30 days are eligible for refund
             </p>
           </div>
 
           {loading ? (
-            <div className="p-6 text-center">加载中...</div>
+            <div className="p-6 text-center text-gray-600">Loading...</div>
           ) : purchases.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">暂无订单</div>
+            <div className="p-6 text-center text-gray-500">No orders</div>
           ) : (
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 text-left text-sm text-gray-500">
-                  <th className="px-6 py-3 font-medium">内容</th>
-                  <th className="px-6 py-3 font-medium">购买者</th>
-                  <th className="px-6 py-3 font-medium">金额</th>
-                  <th className="px-6 py-3 font-medium">购买时间</th>
-                  <th className="px-6 py-3 font-medium">操作</th>
+                <tr className="bg-gray-50 text-left text-sm text-gray-600">
+                  <th className="px-6 py-3 font-medium">Content</th>
+                  <th className="px-6 py-3 font-medium">Buyer</th>
+                  <th className="px-6 py-3 font-medium">Amount</th>
+                  <th className="px-6 py-3 font-medium">Date</th>
+                  <th className="px-6 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,36 +118,38 @@ export default function RefundsPage() {
                   const canRefund = daysSincePurchase <= 30;
 
                   return (
-                    <tr key={purchase.id} className="border-t">
+                    <tr key={purchase.id} className="border-t border-gray-100">
                       <td className="px-6 py-4">
-                        <div className="font-medium">{purchase.post.title}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-gray-900">
+                          {purchase.post.title}
+                        </div>
+                        <div className="text-sm text-gray-600">
                           /{purchase.post.slug}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div>{purchase.user.name || "-"}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-gray-900">{purchase.user.name || "-"}</div>
+                        <div className="text-sm text-gray-600">
                           {purchase.user.email}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-gray-900">
                         {formatPrice(purchase.amount, purchase.currency)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {new Date(purchase.createdAt).toLocaleDateString("zh-CN")}
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(purchase.createdAt).toLocaleDateString("en-US")}
                       </td>
                       <td className="px-6 py-4">
                         {canRefund ? (
                           <button
                             onClick={() => handleRefund(purchase.id)}
                             disabled={refundingId === purchase.id}
-                            className="text-red-600 hover:text-red-800 text-sm disabled:opacity-50"
+                            className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
                           >
-                            {refundingId === purchase.id ? "处理中..." : "退款"}
+                            {refundingId === purchase.id ? "Processing..." : "Refund"}
                           </button>
                         ) : (
-                          <span className="text-gray-400 text-sm">已过期</span>
+                          <span className="text-gray-400 text-sm">Expired</span>
                         )}
                       </td>
                     </tr>

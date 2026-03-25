@@ -51,7 +51,7 @@ export function AccountContent({
   const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   const handleCancelSubscription = async (id: string) => {
-    if (!confirm("确定要取消订阅吗？")) return;
+    if (!confirm("Are you sure you want to cancel this subscription?")) return;
 
     setCancelingId(id);
     try {
@@ -62,10 +62,10 @@ export function AccountContent({
         window.location.reload();
       } else {
         const data = await res.json();
-        alert(data.error || "取消失败");
+        alert(data.error || "Cancellation failed");
       }
     } catch {
-      alert("取消失败");
+      alert("Cancellation failed");
     } finally {
       setCancelingId(null);
     }
@@ -73,36 +73,36 @@ export function AccountContent({
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold">个人中心</h1>
+          <h1 className="text-xl font-bold text-gray-900">My Account</h1>
           <p className="text-gray-600 text-sm">{user.email}</p>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg border">
-          <div className="border-b px-6 py-4">
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex gap-4">
               <button
                 onClick={() => setActiveTab("purchases")}
-                className={`px-4 py-2 ${
+                className={`px-4 py-2 font-medium ${
                   activeTab === "purchases"
-                    ? "border-b-2 border-black font-medium"
-                    : "text-gray-600"
+                    ? "text-gray-900 border-b-2 border-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                已购内容 ({purchases.length})
+                Purchased ({purchases.length})
               </button>
               <button
                 onClick={() => setActiveTab("subscriptions")}
-                className={`px-4 py-2 ${
+                className={`px-4 py-2 font-medium ${
                   activeTab === "subscriptions"
-                    ? "border-b-2 border-black font-medium"
-                    : "text-gray-600"
+                    ? "text-gray-900 border-b-2 border-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                我的订阅 ({subscriptions.length})
+                My Subscriptions ({subscriptions.length})
               </button>
             </div>
           </div>
@@ -111,21 +111,25 @@ export function AccountContent({
             {activeTab === "purchases" ? (
               <div className="space-y-4">
                 {purchases.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">暂无购买记录</p>
+                  <p className="text-gray-500 text-center py-8">
+                    No purchases yet
+                  </p>
                 ) : (
                   purchases.map((purchase) => (
                     <Link
                       key={purchase.id}
                       href={`/${purchase.post.creator.slug}/${purchase.post.slug}`}
-                      className="block p-4 border rounded-lg hover:bg-gray-50"
+                      className="block p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition"
                     >
-                      <div className="font-medium">{purchase.post.title}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-gray-900">
+                        {purchase.post.title}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
                         by {purchase.post.creator.name}
                       </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        购买于{" "}
-                        {new Date(purchase.createdAt).toLocaleDateString("zh-CN")}
+                      <div className="text-xs text-gray-500 mt-1">
+                        Purchased on{" "}
+                        {new Date(purchase.createdAt).toLocaleDateString("en-US")}
                       </div>
                     </Link>
                   ))
@@ -134,38 +138,42 @@ export function AccountContent({
             ) : (
               <div className="space-y-4">
                 {subscriptions.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">暂无订阅</p>
+                  <p className="text-gray-500 text-center py-8">No subscriptions</p>
                 ) : (
                   subscriptions.map((sub) => (
                     <div
                       key={sub.id}
-                      className="p-4 border rounded-lg flex justify-between items-center"
+                      className="p-4 border border-gray-200 rounded-lg flex justify-between items-center"
                     >
                       <div>
-                        <div className="font-medium">{sub.creator.name}</div>
-                        <div className="text-sm text-gray-500">
-                          {sub.plan === "yearly" ? "年付" : "月付"}
+                        <div className="font-medium text-gray-900">
+                          {sub.creator.name}
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          到期于{" "}
+                        <div className="text-sm text-gray-600">
+                          {sub.plan === "yearly" ? "Yearly" : "Monthly"}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Renews on{" "}
                           {new Date(sub.currentPeriodEnd).toLocaleDateString(
-                            "zh-CN"
+                            "en-US"
                           )}
                         </div>
                       </div>
                       <div className="flex gap-2">
                         <Link
                           href={`/${sub.creator.slug}`}
-                          className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
+                          className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
                         >
-                          查看
+                          View
                         </Link>
                         <button
                           onClick={() => handleCancelSubscription(sub.id)}
                           disabled={cancelingId === sub.id}
                           className="px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50 disabled:opacity-50"
                         >
-                          {cancelingId === sub.id ? "取消中..." : "取消订阅"}
+                          {cancelingId === sub.id
+                            ? "Canceling..."
+                            : "Cancel Subscription"}
                         </button>
                       </div>
                     </div>

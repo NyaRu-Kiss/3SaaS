@@ -37,7 +37,7 @@ export default function CouponsPage() {
       const data = await res.json();
       setCoupons(data);
     } catch {
-      alert("加载优惠券失败");
+      alert("Failed to load coupons");
     } finally {
       setLoading(false);
     }
@@ -72,17 +72,17 @@ export default function CouponsPage() {
         loadCoupons();
       } else {
         const data = await res.json();
-        alert(data.error || "创建失败");
+        alert(data.error || "Failed to create coupon");
       }
     } catch {
-      alert("创建失败");
+      alert("Failed to create coupon");
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("确定要删除此优惠券吗？")) return;
+    if (!confirm("Are you sure you want to delete this coupon?")) return;
 
     try {
       const res = await fetch(`/api/coupons?id=${id}`, {
@@ -91,84 +91,87 @@ export default function CouponsPage() {
       if (res.ok) {
         loadCoupons();
       } else {
-        alert("删除失败");
+        alert("Failed to delete");
       }
     } catch {
-      alert("删除失败");
+      alert("Failed to delete");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-              &larr; 返回
+            <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-gray-900 font-medium"
+            >
+              &larr; Back
             </Link>
-            <h1 className="text-xl font-bold">优惠券管理</h1>
+            <h1 className="text-xl font-bold text-gray-900">Coupon Management</h1>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium"
           >
-            创建优惠券
+            Create Coupon
           </button>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         {loading ? (
-          <p className="text-center py-8">加载中...</p>
+          <p className="text-center py-8 text-gray-600">Loading...</p>
         ) : coupons.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border">
-            <p className="text-gray-500 mb-4">暂无优惠券</p>
+          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+            <p className="text-gray-500 mb-4">No coupons yet</p>
             <button
               onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium"
             >
-              创建第一个优惠券
+              Create Your First Coupon
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 text-left text-sm text-gray-500">
-                  <th className="px-6 py-3 font-medium">优惠码</th>
-                  <th className="px-6 py-3 font-medium">折扣</th>
-                  <th className="px-6 py-3 font-medium">已使用/总次数</th>
-                  <th className="px-6 py-3 font-medium">有效期</th>
-                  <th className="px-6 py-3 font-medium">操作</th>
+                <tr className="bg-gray-50 text-left text-sm text-gray-600">
+                  <th className="px-6 py-3 font-medium">Code</th>
+                  <th className="px-6 py-3 font-medium">Discount</th>
+                  <th className="px-6 py-3 font-medium">Used / Total</th>
+                  <th className="px-6 py-3 font-medium">Valid Until</th>
+                  <th className="px-6 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {coupons.map((coupon) => (
-                  <tr key={coupon.id} className="border-t">
-                    <td className="px-6 py-4 font-mono font-medium">
+                  <tr key={coupon.id} className="border-t border-gray-100">
+                    <td className="px-6 py-4 font-mono font-medium text-gray-900">
                       {coupon.code}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-gray-700">
                       {coupon.discountType === "percentage"
                         ? `${coupon.discountValue}%`
                         : `$${coupon.discountValue}`}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-gray-700">
                       {coupon.usedCount}
                       {coupon.maxUses ? ` / ${coupon.maxUses}` : " / ∞"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(coupon.validFrom).toLocaleDateString("zh-CN")}
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {new Date(coupon.validFrom).toLocaleDateString("en-US")}
                       {coupon.validUntil
-                        ? ` - ${new Date(coupon.validUntil).toLocaleDateString("zh-CN")}`
-                        : " - 无限制"}
+                        ? ` - ${new Date(coupon.validUntil).toLocaleDateString("en-US")}`
+                        : " - No expiry"}
                     </td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleDelete(coupon.id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
                       >
-                        删除
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -181,11 +184,15 @@ export default function CouponsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">创建优惠券</h2>
+          <div className="bg-white rounded-lg p-6 w-full max-w-md border border-gray-200">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
+              Create Coupon
+            </h2>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">优惠码</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Coupon Code
+                </label>
                 <input
                   type="text"
                   value={formData.code}
@@ -193,26 +200,30 @@ export default function CouponsPage() {
                     setFormData({ ...formData, code: e.target.value.toUpperCase() })
                   }
                   required
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="SAVE20"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">折扣类型</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Discount Type
+                </label>
                 <select
                   value={formData.discountType}
                   onChange={(e) =>
                     setFormData({ ...formData, discountType: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="percentage">百分比折扣</option>
-                  <option value="fixed">固定金额</option>
+                  <option value="percentage">Percentage</option>
+                  <option value="fixed">Fixed Amount</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  {formData.discountType === "percentage" ? "折扣比例 (%)" : "折扣金额 ($)"}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {formData.discountType === "percentage"
+                    ? "Discount (%)"
+                    : "Discount ($)"}
                 </label>
                 <input
                   type="number"
@@ -223,11 +234,13 @@ export default function CouponsPage() {
                   required
                   min="1"
                   max={formData.discountType === "percentage" ? "100" : undefined}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">最大使用次数（可选）</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Uses (optional)
+                </label>
                 <input
                   type="number"
                   value={formData.maxUses}
@@ -235,12 +248,14 @@ export default function CouponsPage() {
                     setFormData({ ...formData, maxUses: e.target.value })
                   }
                   min="1"
-                  className="w-full px-3 py-2 border rounded-md"
-                  placeholder="不限制"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  placeholder="Unlimited"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">有效期（天）</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Valid For (days)
+                </label>
                 <input
                   type="number"
                   value={formData.validDays}
@@ -249,23 +264,23 @@ export default function CouponsPage() {
                   }
                   required
                   min="1"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border rounded-md hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700"
                 >
-                  取消
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="flex-1 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 disabled:opacity-50 font-medium"
                 >
-                  {creating ? "创建中..." : "创建"}
+                  {creating ? "Creating..." : "Create"}
                 </button>
               </div>
             </form>

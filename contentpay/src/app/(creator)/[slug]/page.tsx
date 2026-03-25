@@ -45,15 +45,15 @@ export default async function CreatorPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold">
+            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-700">
               {creator.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{creator.name}</h1>
-              <p className="text-gray-600">{creator.bio || "暂无简介"}</p>
+              <h1 className="text-2xl font-bold text-gray-900">{creator.name}</h1>
+              <p className="text-gray-600">{creator.bio || "No bio yet"}</p>
             </div>
           </div>
         </div>
@@ -61,34 +61,42 @@ export default async function CreatorPage({ params }: PageProps) {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">内容</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Content</h2>
           <SubscribeButton creatorId={creator.id} />
         </div>
 
         <div className="space-y-4">
           {posts.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">暂无内容</p>
+            <p className="text-gray-500 text-center py-8 bg-white rounded-lg border">
+              No content yet
+            </p>
           ) : (
             posts.map((post: Post) => (
               <Link
                 key={post.id}
                 href={`/${slug}/${post.slug}`}
-                className="block bg-white rounded-lg border p-6 hover:shadow-md transition"
+                className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg font-semibold">{post.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {post.title}
+                    </h3>
                     <p className="text-gray-500 text-sm mt-1">
                       {post.publishedAt
-                        ? new Date(post.publishedAt).toLocaleDateString("zh-CN")
+                        ? new Date(post.publishedAt).toLocaleDateString("en-US")
                         : ""}
                     </p>
                   </div>
                   <div>
                     {post.priceType === "FREE" ? (
-                      <span className="text-green-600 text-sm">免费</span>
+                      <span className="text-green-600 text-sm font-medium">
+                        Free
+                      </span>
                     ) : post.priceType === "SUBSCRIPTION" ? (
-                      <span className="text-purple-600 text-sm">会员专享</span>
+                      <span className="text-purple-600 text-sm font-medium">
+                        Members Only
+                      </span>
                     ) : (
                       <span className="text-gray-900 font-medium">
                         {formatPrice(post.price || 0, post.currency)}
@@ -97,7 +105,9 @@ export default async function CreatorPage({ params }: PageProps) {
                   </div>
                 </div>
                 {post.excerpt && (
-                  <p className="text-gray-600 mt-2 line-clamp-2">{post.excerpt}</p>
+                  <p className="text-gray-600 mt-2 line-clamp-2">
+                    {post.excerpt}
+                  </p>
                 )}
               </Link>
             ))

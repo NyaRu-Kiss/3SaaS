@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -70,36 +71,42 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b">
+      <header className="border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <a href={`/${slug}`} className="text-gray-600 hover:text-gray-900">
-            &larr; 返回主页
-          </a>
+          <Link
+            href={`/${slug}`}
+            className="text-gray-600 hover:text-gray-900 font-medium"
+          >
+            &larr; Back to Home
+          </Link>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-12">
         <article>
-          <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">{post.title}</h1>
 
           <div className="flex items-center gap-4 mb-8 text-gray-600">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium">
               {post.creator.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <div className="font-medium text-gray-900">{post.creator.name}</div>
+              <div className="font-medium text-gray-900">
+                {post.creator.name}
+              </div>
               <div className="text-sm">
                 {post.publishedAt
-                  ? new Date(post.publishedAt).toLocaleDateString("zh-CN")
+                  ? new Date(post.publishedAt).toLocaleDateString("en-US")
                   : ""}
               </div>
             </div>
           </div>
 
           {!hasAccess && (
-            <div className="mb-8 p-6 bg-gray-50 rounded-lg border text-center">
-              <p className="text-gray-600 mb-4">
-                此内容为付费内容，{formatPrice(post.price || 0, post.currency)} 即可解锁全部内容
+            <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 text-center">
+              <p className="text-gray-700 mb-4">
+                This is paid content. Unlock the full article for{" "}
+                {formatPrice(post.price || 0, post.currency)}
               </p>
               {post.priceType === "ONE_TIME" && (
                 <PurchaseButton
@@ -114,18 +121,18 @@ export default async function PostPage({ params }: PageProps) {
 
           {displayContent ? (
             <div
-              className="prose prose-lg max-w-none"
+              className="prose prose-lg max-w-none text-gray-800"
               dangerouslySetInnerHTML={{ __html: displayContent }}
             />
           ) : (
-            <p className="text-gray-500">暂无内容</p>
+            <p className="text-gray-500">No content available</p>
           )}
 
           {!hasAccess && post.priceType === "ONE_TIME" && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
               <div className="max-w-4xl mx-auto flex justify-between items-center">
                 <div>
-                  <span className="text-2xl font-bold">
+                  <span className="text-2xl font-bold text-gray-900">
                     {formatPrice(post.price || 0, post.currency)}
                   </span>
                 </div>

@@ -23,10 +23,10 @@ export function SubscribeButton({ creatorId }: SubscribeButtonProps) {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "订阅失败");
+        alert(data.error || "Subscription failed");
       }
     } catch {
-      alert("订阅失败，请重试");
+      alert("Subscription failed, please try again");
     } finally {
       setLoading(false);
     }
@@ -37,26 +37,26 @@ export function SubscribeButton({ creatorId }: SubscribeButtonProps) {
       <button
         onClick={() => setShowPlans(!showPlans)}
         disabled={loading}
-        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
+        className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 font-medium"
       >
-        {loading ? "处理中..." : "订阅"}
+        {loading ? "Processing..." : "Subscribe"}
       </button>
 
       {showPlans && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border p-2 z-10">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10">
           <button
             onClick={() => handleSubscribe("monthly")}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
+            className="w-full text-left px-4 py-3 hover:bg-gray-100 rounded-lg transition"
           >
-            <div className="font-medium">月付</div>
-            <div className="text-sm text-gray-500">$9.99/月</div>
+            <div className="font-medium text-gray-900">Monthly</div>
+            <div className="text-sm text-gray-600">$9.99/month</div>
           </button>
           <button
             onClick={() => handleSubscribe("yearly")}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
+            className="w-full text-left px-4 py-3 hover:bg-gray-100 rounded-lg transition"
           >
-            <div className="font-medium">年付</div>
-            <div className="text-sm text-gray-500">$99.99/年 (省17%)</div>
+            <div className="font-medium text-gray-900">Yearly</div>
+            <div className="text-sm text-green-600">$99.99/year (Save 17%)</div>
           </button>
         </div>
       )}
